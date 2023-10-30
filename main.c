@@ -5,7 +5,7 @@
 char data[3];
 int i = 0;
 unsigned long num = 0;
-float value; // Luu tru giá tri dùng cho dat giá tri dau ra xung PWM.
+float value; // Luu tru giÃ¡ tri dÃ¹ng cho dat giÃ¡ tri dau ra xung PWM.
 
 float map(float x, float in_min, float in_max,float out_min, float out_max)
 {
@@ -15,20 +15,19 @@ float map(float x, float in_min, float in_max,float out_min, float out_max)
 void main(void)
 { 
   WDTCTL = WDTPW | WDTHOLD; // Stop watchdog timer
-  BCSCTL1 = CALBC1_1MHZ; // Thiet lap tan so nap DCO lên 1MHz
-  DCOCTL = CALDCO_1MHZ;  // Thiet lap tan so nap DCO lên 1MHz
+  BCSCTL1 = CALBC1_1MHZ; 
+  DCOCTL = CALDCO_1MHZ;  
  
-  P1DIR |= BIT6;  // Dat chan p1.6 la dau ra
-  P1SEL |= BIT1 + BIT2 + BIT6; // Su dung chuc nang Timer/Counter (TA0.1)
+  P1DIR |= BIT6;  
+  P1SEL |= BIT1 + BIT2 + BIT6; 
 
   TACTL = TASSEL_2 + MC_1; // Cau hinh xung va timer A1.1 
   TACCTL1 = OUTMOD_7; // Che do dau ra xung PWM (Reset/Set)
   TACCR0 = 10000; // Dat gia tri gioi han cua Timer A
-  TACCR1 = 0;  // Dat gia tri dau ra ban dau cua Timer A1.1 la 0
+  TACCR1 = 0;  // Dat gia tri dau ra ban dau cua Timer A1.1 
 
   // Cau hinh chan UART 1 2
-  //P1SEL = BIT1 + BIT2 ; // P1.1 = RXD, P1.2=TXD
-  P1SEL2 = BIT1 + BIT2 ; // P1.1 = RXD, P1.2=TXD
+  P1SEL2 = BIT1 + BIT2 ;
 
   UCA0CTL1 |= UCSSEL_2; // Thiet lap nguon xung cho UART la SMCLK
   UCA0BR0 = 104; // 1MHz 9600
@@ -42,11 +41,11 @@ void main(void)
 #pragma vector = USCIAB0RX_VECTOR
 __interrupt void USCIAB0RX_ISR(void)
 {
-  data[i] = UCA0RXBUF; // Nhan du lieu PC truyen qua MSP duoc luu trong mang data
+  data[i] = UCA0RXBUF; 
   i++;
   if(i>2){i=0;}
-  num = atoi(data);// Chuyen ky tu luu trong data thanh so nguyen luu trong num
-  value = map(num,20,120,0,10000); //Hàm map() de anh xa gia tri num tu khoang 20-120 sang khoang 0-10000.
+  num = atoi(data);
+  value = map(num,20,120,0,10000); 
   TACCR1 = (int)(value);
 }
 
